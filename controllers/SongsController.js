@@ -1,0 +1,102 @@
+const { SongModel } = require('../models')
+const saveFile = require('../utils/saveFile')
+
+class SongsController {
+    async getSongs(req, res) {
+        const offset = req.query.offset
+        const sortByListens = req.query.sortByListens === 'true'
+        const sortByDate = req.query.sortByDate  === 'true'
+        const query = req.query.query
+        const regExp = new RegExp(query, 'i')
+        
+        const sortObj = {}
+        if(sortByListens) sortObj.listens = -1
+        if(sortByDate) sortObj.createdAt = -1
+        try {
+            const songs = await SongModel
+                .find({name: regExp})
+                .sort(sortObj)
+                .skip(offset || 0)
+                .limit(offset ? 5 : Infinity)
+                .populate(['artist', 'album'])
+                .exec()
+            
+            SongModel.count((err, count) => {
+                if(err) {
+                    res.status(500).json(err)
+                    return
+                }
+                res.json({songs, songsAmount: count})
+            })
+        } catch (error) {
+            res.status(500).json(error)
+        } 
+    }
+
+    async getArtistsSongs(req, res) {
+        const limit = req.query.limit ?? Infinity
+        const sortByListens = req.query.sortByListens ?? false
+
+        const sortObj = {}
+        if(sortByListens) sortObj.listens = -1
+
+        try {
+            const songs = await SongModel
+                .find({ artist: req.params.id })
+                .sort(sortObj)
+                .limit(limit)
+                .populate(['artist', 'album'])
+                .exec()
+            res.json(songs)
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    }
+
+    async getAlbumsSongs(req, res) {
+        try {
+            const songs = await SongModel.find({ album: req.params.id }).populate(['artist', 'album']).exec()
+            res.json(songs)
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    }
+
+    async addSong(req, res) {
+        const { name, artist, album } = req.body
+        try {
+            
+            const audioFilename = saveFile(req.files['audio'][0], '../static/songs')
+
+            const songObj = {
+                name,
+                artist,
+                album,
+                src: `${process.env.HOST}:${process.env.PORT}/songs/${audioFilename}`
+            }
+
+            if(req.files['thumbnail']) {
+                const thumbnailFilename = saveFile(req.files['thumbnail'][0], '../static/thumbs')
+                songObj.thumbnail = `${process.env.HOST}:${process.env.PORT}/thumbs/${thumbnailFilename}`
+            }
+
+            const songModel = new SongModel(songObj)
+            const song = await songModel.save()
+            res.json({ song })
+        } catch (error) {
+            res.status(500).json({ error })
+        }
+    }
+
+    async incrementListens(req, res) {
+        const songId = req.body.songId
+        try {
+            await SongModel.findByIdAndUpdate(songId, { $inc: { listens: 1 } })
+            res.end()
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    }
+}
+
+module.exports = SongsController
