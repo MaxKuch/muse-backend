@@ -7,6 +7,9 @@ const { ErrorMiddleware } =  require('./middlewares')
 
 require('./core/db')
 
+const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
+const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
+
 const app = express()
 
 const corsConfig = {
@@ -23,5 +26,5 @@ app.use(ErrorMiddleware)
 const server = http.createServer(app)
 
 server.listen(process.env.PORT, () => {
-    console.log(`Server started on ${process.env.HOST}:${process.env.PORT}`)
+    console.log(`Server started on ${HOST}${PORT}`)
 })

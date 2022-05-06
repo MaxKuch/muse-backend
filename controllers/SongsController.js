@@ -1,6 +1,9 @@
 const { SongModel } = require('../models')
 const saveFile = require('../utils/saveFile')
 
+const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
+const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
+
 class SongsController {
     async getSongs(req, res) {
         const offset = req.query.offset
@@ -72,12 +75,12 @@ class SongsController {
                 name,
                 artist,
                 album,
-                src: `${process.env.HOST}:${process.env.PORT}/songs/${audioFilename}`
+                src: `${HOST}:${PORT}/songs/${audioFilename}`
             }
 
             if(req.files['thumbnail']) {
                 const thumbnailFilename = saveFile(req.files['thumbnail'][0], '../static/thumbs')
-                songObj.thumbnail = `${process.env.HOST}:${process.env.PORT}/thumbs/${thumbnailFilename}`
+                songObj.thumbnail = `${HOST}${PORT}/thumbs/${thumbnailFilename}`
             }
 
             const songModel = new SongModel(songObj)

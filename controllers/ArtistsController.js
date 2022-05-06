@@ -3,6 +3,9 @@ const path = require('path')
 const fs = require('fs')
 const uuid = require('uuid')
 
+const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
+const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
+
 class ArtistsController {
     async getArtists(req, res) {
         const offset = req.query.offset
@@ -44,7 +47,7 @@ class ArtistsController {
             const artistModel = new ArtistModel({
                 name,
                 description,
-                thumbnail: `${process.env.HOST}:${process.env.PORT}/pictures/${filename}`
+                thumbnail: `${HOST}${PORT}/pictures/${filename}`
             })
             const artist = await artistModel.save()
             res.json(artist)
