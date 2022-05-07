@@ -3,12 +3,12 @@ const fs = require('fs')
 const uuid = require('uuid')
 
 const saveFile = (file, savePath) => {
-    const filename = uuid.v4() + '.' + file.originalname.split('.').pop()
-    savePath = path.resolve(__dirname, savePath)
-    if (!path.existsSync(savePath)) {
-        fs.mkdirSync(savePath, 0744);
-    }
     try {
+        const filename = uuid.v4() + '.' + file.originalname.split('.').pop()
+        savePath = path.resolve(__dirname, savePath)
+        if (!path.existsSync(savePath)) {
+            fs.mkdirSync(savePath, 0744);
+        }
         fs.writeFileSync(path.resolve(savePath, filename), file.buffer)
         return filename
     } catch (error) {
