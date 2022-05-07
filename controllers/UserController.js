@@ -5,10 +5,10 @@ class UserController {
     async login(req, res, next) {
         try {
             const {email, password} = req.body
-            // const userData = await userService.login(email, password)
+            const userData = await userService.login(email, password)
             res.cookie('refreshToken', email, { maxAge: 60 * 24 * 60 * 60, httpOnly: true})
             res.end()
-            // return res.json(userData)
+            return res.json(userData)
         } catch (error) {
             next(error)
         }
