@@ -1,5 +1,8 @@
 const mongoose = require('mongoose')
 const { AlbumModel } = require('../models')
+const path = require('path')
+const fs = require('fs')
+const uuid = require('uuid')
 const saveFile = require('../utils/saveFile')
 
 const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
@@ -45,8 +48,8 @@ class AlbumsController {
     }
     async addAlbum(req, res) {
         const { name, description, artist } = req.body
-        const albumFilename = saveFile(req.files['audio'][0], '../static/pictures')
         try {
+            const albumFilename = saveFile(req.file, '../static/pictures')
             const albumModel = new AlbumModel({
                 artist: new mongoose.Types.ObjectId(artist),
                 name,
