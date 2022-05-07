@@ -8,7 +8,7 @@ const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : proc
 const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
 
 class ArtistsController {
-    async getArtists(req, res) {
+    async getArtists(req, res, next) {
         const offset = req.query.offset
         const query = req.query.query
         const regExp = new RegExp(query || '', 'i')
@@ -22,23 +22,23 @@ class ArtistsController {
                 res.json({artists, artistsAmount: count})
             })
         } catch (error) {
-            res.status(500).json(error)
+            next(error)
         }
     }
 
-    async getArtist(req, res) {
+    async getArtist(req, res, next) {
         try {
             const artist = await ArtistModel.findById(req.params.id).exec()
             res.json(artist)
         } catch (error) {
-            res.status(404).json(error)
+            next(error)
         }
     }
 
-    async addArtist(req, res) {
+    async addArtist(req, res, next) {
         const {name, description} = req.body
         try {
-            const artistFilename = saveFile(req.file, '../static/pictures')
+            const artistFilename = saveFile(req.file, '../static/pic')
             const artistModel = new ArtistModel({
                 name,
                 description,
@@ -47,7 +47,7 @@ class ArtistsController {
             const artist = await artistModel.save()
             res.json(artist)
         } catch (error) {
-            res.status(500).json({ error })
+            next(error)
         }
     }
 }

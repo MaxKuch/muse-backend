@@ -6,8 +6,8 @@ const saveFile = (file, savePath) => {
     try {
         const filename = uuid.v4() + '.' + file.originalname.split('.').pop()
         savePath = path.resolve(__dirname, savePath)
-        if (!path.existsSync(savePath)) {
-            fs.mkdirSync(savePath, 0744);
+        if (!fs.existsSync(savePath)) {
+            fs.mkdirSync(savePath, { recursive: true });
         }
         fs.writeFileSync(path.resolve(savePath, filename), file.buffer)
         return filename
