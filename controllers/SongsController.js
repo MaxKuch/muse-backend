@@ -1,8 +1,8 @@
 const { SongModel } = require('../models')
 const saveFile = require('../utils/saveFile')
 
-const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
-const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
+const HOST = process.env.HOST_PROD
+const PORT = ''
 
 class SongsController {
     async getSongs(req, res) {
