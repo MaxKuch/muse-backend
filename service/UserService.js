@@ -23,19 +23,23 @@ class UserService {
     }
 
     async login(email, password) {
-        const user = await UserModel.findOne({ email }).populate({path: 'favoriteSongs', populate: ['album', 'artist']})
-        if(!user) {
-            throw ApiError.BadRequest(`Пользователь с адресом ${email} не зарегистрирован`)
+        try {
+            const user = await UserModel.findOne({ email }).populate({path: 'favoriteSongs', populate: ['album', 'artist']})
+            if(!user) {
+                throw ApiError.BadRequest(`Пользователь с адресом ${email} не зарегистрирован`)
+            }
+            const isPassEquals = await bcrypt.compare(password, user.password)
+            if(!isPassEquals) {
+                throw ApiError.BadRequest(`Неверный пароль`)
+            }
+            const userDto = new UserDto(user)
+            const tokens = await tokenService.generateTokens({email: userDto.email, id: userDto.id})
+            await tokenService.saveToken(userDto.id, tokens.refreshToken)
+    
+            return {...tokens, user: userDto}
+        } catch (error) {
+            throw error
         }
-        const isPassEquals = await bcrypt.compare(password, user.password)
-        if(!isPassEquals) {
-            throw ApiError.BadRequest(`Неверный пароль`)
-        }
-        const userDto = new UserDto(user)
-        const tokens = await tokenService.generateTokens({email: userDto.email, id: userDto.id})
-        await tokenService.saveToken(userDto.id, tokens.refreshToken)
-
-        return {...tokens, user: userDto}
     }
 
     async logout(refreshToken) {
