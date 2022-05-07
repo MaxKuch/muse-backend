@@ -1,4 +1,4 @@
 /node_modules
-/static/pictures
-/static/songs
-/static/thumbs
+/static/pictures/*
+/static/songs/*
+/static/thumbs/*
