@@ -33,8 +33,7 @@ class UserService {
                 throw ApiError.BadRequest(`Неверный пароль`)
             }
             const userDto = new UserDto(user)
-            // const tokens = await tokenService.generateTokens({email: userDto.email, id: userDto.id})
-            const tokens = {accessToken: 'asd', refreshToken: '123'}
+            const tokens = await tokenService.generateTokens({email: userDto.email, id: userDto.id})
             await tokenService.saveToken(userDto.id, tokens.refreshToken)
     
             return {...tokens, user: userDto}
