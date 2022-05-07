@@ -38,7 +38,7 @@ class ArtistsController {
     async addArtist(req, res, next) {
         const {name, description} = req.body
         try {
-            const artistFilename = saveFile(req.file, '../static/pic')
+            const artistFilename = saveFile(req.file, '../static/pictures')
             const artistModel = new ArtistModel({
                 name,
                 description,
