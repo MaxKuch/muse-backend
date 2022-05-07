@@ -4,7 +4,7 @@ const uuid = require('uuid')
 
 const saveFile = (file, savePath) => {
     const filename = uuid.v4() + '.' + file.originalname.split('.').pop()
-    const savePath = path.resolve(__dirname, savePath)
+    savePath = path.resolve(__dirname, savePath)
     if (!path.existsSync(savePath)) {
         fs.mkdirSync(savePath, 0744);
     }
