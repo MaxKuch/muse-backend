@@ -35,6 +35,7 @@ const createRoutes = (app) => {
     app.get('/user', AuthMiddleware, userController.getUser)
 
     app.get('/*', (_, res) => {
+        res.headers
         res.sendFile(path.join(__dirname, '../static/build', 'index.html'))
     })
       
