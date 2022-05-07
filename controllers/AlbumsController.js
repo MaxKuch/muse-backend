@@ -1,8 +1,6 @@
 const mongoose = require('mongoose')
 const { AlbumModel } = require('../models')
-const path = require('path')
-const fs = require('fs')
-const uuid = require('uuid')
+const saveFile = require('../utils/saveFile')
 
 const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
 const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
@@ -47,18 +45,13 @@ class AlbumsController {
     }
     async addAlbum(req, res) {
         const { name, description, artist } = req.body
-        const filename = uuid.v4() + '.' + req.file.originalname.split('.').pop()
-        try {
-            fs.writeFileSync(path.resolve(__dirname, '../static/pictures', filename), req.file.buffer)
-        } catch (error) {
-            res.status(500).json({ error })
-        }
+        const albumFilename = saveFile(req.files['audio'][0], '../static/pictures')
         try {
             const albumModel = new AlbumModel({
                 artist: new mongoose.Types.ObjectId(artist),
                 name,
                 description,
-                thumbnail: `${HOST}${PORT}/pictures/${filename}`
+                thumbnail: `${HOST}${PORT}/pictures/${albumFilename}`
             })
             const album = await albumModel.save()
             res.json(album)
