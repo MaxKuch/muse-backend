@@ -1,5 +1,5 @@
 const { SongModel } = require('../models')
-const saveFile = require('../utils/saveFile')
+const { FilesService } = require('../service')
 
 const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
 const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
@@ -69,18 +69,18 @@ class SongsController {
         const { name, artist, album } = req.body
         try {
             
-            const audioFilename = saveFile(req.files['audio'][0], '../static/songs')
+            const audioUrl = await FilesService.saveFile(req.files['audio'][0], 'songs')
 
             const songObj = {
                 name,
                 artist,
                 album,
-                src: `${HOST}:${PORT}/songs/${audioFilename}`
+                src: audioUrl
             }
 
             if(req.files['thumbnail']) {
-                const thumbnailFilename = saveFile(req.files['thumbnail'][0], '../static/thumbs')
-                songObj.thumbnail = `${HOST}${PORT}/thumbs/${thumbnailFilename}`
+                const thumbnailUrl = await FilesService.saveFile(req.files['thumbnail'][0], 'pictures')
+                songObj.thumbnail = thumbnailUrl
             }
 
             const songModel = new SongModel(songObj)

@@ -1,8 +1,5 @@
 const { ArtistModel } = require('../models')
-const path = require('path')
-const fs = require('fs')
-const uuid = require('uuid')
-const saveFile = require('../utils/saveFile')
+const { FilesService } = require('../service')
 
 const HOST = process.env.NODE_ENV == 'production' ? process.env.HOST_PROD : process.env.HOST_DEV
 const PORT = process.env.NODE_ENV == 'production' ? '' : ':'+process.env.PORT
@@ -38,11 +35,11 @@ class ArtistsController {
     async addArtist(req, res, next) {
         const {name, description} = req.body
         try {
-            const artistFilename = saveFile(req.file, '../static/pictures')
+            const artistThumbUrl = await FilesService.saveFile(req.file, 'pictures')
             const artistModel = new ArtistModel({
                 name,
                 description,
-                thumbnail: `${HOST}${PORT}/pictures/${artistFilename}`
+                thumbnail: artistThumbUrl
             })
             const artist = await artistModel.save()
             res.json(artist)
