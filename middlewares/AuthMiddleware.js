@@ -1,5 +1,5 @@
 const { ApiError } = require('../exceptions')
-const TokenService = require('../service/TokenService')
+const { tokenService } = require('../service')
 
 module.exports = async function (req, _, next) {
     try {
@@ -9,7 +9,7 @@ module.exports = async function (req, _, next) {
         const accessToken = authorizationHeader.split(' ')[1]
         if(!accessToken) throw ApiError.UnauthorizedError()
 
-        const userData = TokenService.validateAccessToken(accessToken)
+        const userData = tokenService.validateAccessToken(accessToken)
         if(!userData) throw ApiError.UnauthorizedError()
 
         req.user = userData

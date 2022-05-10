@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const { UserModel } = require('../models')
 const { UserDto } = require('../dtos')
 const { ApiError } = require('../exceptions')
-const { tokenService } = require('./TokenService')
+const tokenService = require('./TokenService')
 
 class UserService {
     async registration(email, password, username) {
