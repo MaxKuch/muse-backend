@@ -11,5 +11,5 @@ Muse - [Demo](https://muse0.herokuapp.com)
 * NodeJS
 * Express
 * JWT (авторизация)
-* Multer (загрозка файлов)
-* Octokit (Официальный клиент GitHub)
+* Multer (загрузка файлов)
+* Octokit (официальный клиент GitHub)
